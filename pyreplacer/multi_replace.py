@@ -50,4 +50,3 @@ if __name__ == "__main__":
     sub = multi_replace(dict)
     new = sub.sub(text)
     print new
-

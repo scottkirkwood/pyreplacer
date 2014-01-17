@@ -85,7 +85,6 @@ class RepFiles:
                 strFrom = line # remove \r\n
             else:
                 strTo = line
-                
                 self.dict[strFrom] = strTo
                 strFrom = ""
                 strTo = ""
@@ -97,7 +96,6 @@ class RepFiles:
     def doIt(self):
         self.getParms()
         self.readDatFile()
-        
         rep = multi_replace.multi_replace(self.dict)
         rep.compile()
         
