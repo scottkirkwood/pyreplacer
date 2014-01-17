@@ -1,0 +1,6 @@
+# Sample
+# First line is a glob path to use.
+./dir/*.py
+# Pairs of from two lines which can be python regexes.
+from text
+to text
