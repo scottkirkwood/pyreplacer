@@ -99,6 +99,7 @@ class RepFiles:
     def readDatFile(self):
         infile = IterLines(self.replacer_filename)
         self.path = infile.next()
+            
         self.dict = {}
         strFrom = ""
         strTo = ""
