@@ -28,7 +28,7 @@ class FileMorpher:
                 (default is yes)
         """
         self.filename = filename
-        self.do_backup = kw.get('backup', 1)
+        self.do_backup = kw.get('backup', 0)
 
         self.stream = None
         self.basename, ext = os.path.splitext(self.filename)

@@ -22,7 +22,6 @@ class multi_replace(UserDict.UserDict):
                                         self.data.keys()))
             if self.re != tmp:
                 self.re = tmp
-                print self.re
                 self.regex = re.compile(self.re)
 
     def __call__(self, match):
