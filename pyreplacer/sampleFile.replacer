@@ -1,6 +1,12 @@
-# Sample
+# Sample Replacer file
+# This is yaml format
 # First line is a glob path to use.
-./dir/*.py
-# Pairs of from two lines which can be python regexes.
-from text
-to text
+path:
+  - dir/*.py
+  - dir2/*.cc
+
+from_to:
+  - from: from text
+    to: to text
+  - from: from2
+    to: to2
