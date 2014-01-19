@@ -1,15 +1,16 @@
-import os, string
+import os
+import string
 
-def replaceFile(oldname, newname):
-    """ Rename file 'oldname' to 'newname'.
-    """
+def replace_file(oldname, newname):
+    """Rename oldname to newname."""
     if os.name == 'nt' and os.path.exists(newname):
         # POSIX rename does an atomic replace, WIN32 rename does not. :-(
         try:
             os.remove(newname)
-        except OSError, exc:
+        except OSError, e:
             import errno
-            if exc.errno != errno.ENOENT: raise exc
+            if e.errno != errno.ENOENT:
+                raise e
 
     # rename it, if the old file exists.
     if os.path.exists(oldname):
@@ -33,31 +34,26 @@ class FileMorpher:
         self.stream = None
         self.basename, ext = os.path.splitext(self.filename)
 
-
     def __del__(self):
         if self.stream:
             # Remove open temp file
             self.__close()
             os.remove(self.__tempfile())
 
-
     def __tempfile(self):
-        return self.basename + ".tmp"
-
+        return self.basename + '.tmp'
 
     def __close(self):
-        """ Close temp stream, if open.
-        """
+        """ Close temp stream, if open."""
         if self.stream:
             self.stream.close()
             self.stream = None
-
 
     def load(self):
         """ Load the content of the original file into a string and
             return it. All I/O exceptions are passed through.
         """
-        file = open(self.filename, "rt")
+        file = open(self.filename, 'rt')
         try:
             content = file.read()
         finally:
@@ -65,21 +61,18 @@ class FileMorpher:
 
         return content
 
-
     def save(self, content):
-        """ Save new content, using a temporary file.
-        """
+        """ Save new content, using a temporary file."""
         file = self.opentemp()
         file.write(content)
         self.commit()
 
 
     def opentemp(self):
-        """ Open a temporary file for writing and return an open stream.
-        """
-        assert not self.stream, "Write stream already open"
+        """ Open a temporary file for writing and return an open stream."""
+        assert not self.stream, 'Write stream already open'
 
-        self.stream = open(self.__tempfile(), "wt")
+        self.stream = open(self.__tempfile(), 'wt')
 
         return self.stream
 
@@ -87,24 +80,25 @@ class FileMorpher:
         """ Close the open temp stream and replace the original file,
             optionally making a backup copy.
         """
-        assert self.stream, "Write stream not open"
+        assert self.stream, 'Write stream not open'
 
         # close temp file
         self.__close()
 
         # do optional backup and rename temp file to the correct name
         if self.do_backup:
-            replaceFile(self.filename, self.basename + ".bak")
+            replace_file(self.filename, self.basename + '.bak')
 
-        replaceFile(self.__tempfile(), self.filename)
+        replace_file(self.__tempfile(), self.filename)
 
     def rollback(self):
-        """ Added the rollback function """
-        assert self.stream, "Write stream not open"
+        """Rollback the changes, basically delete temp file."""
+        assert self.stream, 'Write stream not open'
         self.__close()
         os.remove(self.__tempfile())
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     # prepare test file
     test = open('foo.txt', 'wt')
     test.write('\txxx\nline 2\n\t\t2 tabs\n')
