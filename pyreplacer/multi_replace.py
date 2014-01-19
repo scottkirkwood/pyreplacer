@@ -1,51 +1,46 @@
 #!/usr/bin/env python
-# Original algorithm by Xavier Defrang.
-# http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/81330
-# This implementation by alane@sourceforge.net.
 
 import re
-import UserDict
 
-class multi_replace(UserDict.UserDict):
-    """ An all-in-one multiple string substitution class """
-    def __init__(self, dict = None):
+class MultiReplace(object):
+    """An all-in-one multiple string substitution class."""
+    def __init__(self, config):
         self.re = None
         self.regex = None
-        UserDict.UserDict.__init__(self, dict)
+        self.config = config
         self.compile()
 
     def compile(self):
         """ Build a regular expression object based on the keys of
-            the current dictionary """
-        if len(self.data) > 0:
-            tmp = "(%s)" % "|".join(map(re.escape,
-                                        self.data.keys()))
-            if self.re != tmp:
-                self.re = tmp
-                self.regex = re.compile(self.re)
-
-    def __call__(self, match):
-        """ This handler will be invoked for each regex match """
-        return self.data[match.string[match.start():match.end()]]
+            the current dictionary."""
+        for index, from_to in enumerate(self.config['from_to']):
+            from_to['compiled_from'] = re.compile(from_to['from'])
 
     def sub(self, s):
-        """ Translate text, returns the modified text. """
-        if len(self.data) == 0:
-            return s
-        return self.regex.sub(self, s)
+        """Translate text, returns the modified text."""
+        for from_to in self.config['from_to']:
+            s = from_to['compiled_from'].sub(from_to['to'], s)
+        return s
 
 #
 # Test
 #
-if __name__ == "__main__":
-    text = "Larry Wall is the creator of Perl"
-
-    dict = {
-        r"Larry Wall" : "Guido van Rossum",
-        "creator" : "Benevolent Dictator for Life",
-        "Perl" : "Python",
+if __name__ == '__main__':
+    text = 'Larry Wall is the creator of Perl'
+    config = {
+        'from_to': [
+            {
+                'from': r'L.+ W.l+',
+                'to': 'Guido van Rossum',
+            }, {
+                'from': 'creator',
+                'to':'Benevolent Dictator for Life'
+            }, {
+                'from': 'Perl',
+                'to': 'Python'
+            },
+        ],
     }
-
-    sub = multi_replace(dict)
+    sub = MultiReplace(config)
     new = sub.sub(text)
     print new
